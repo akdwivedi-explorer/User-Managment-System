@@ -40,7 +40,7 @@ const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 };
 
-export const signup = async (req, res) => {
+const signup = async (req, res) => {
     try {
         const { fullName, email, password } = req.body;
 
