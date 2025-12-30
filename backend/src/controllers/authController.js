@@ -36,42 +36,54 @@ const login = async (req, res) => {
     }
 };
 
-const signup = async (req, res) => {
+const generateToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+};
+
+export const signup = async (req, res) => {
     try {
         const { fullName, email, password } = req.body;
-        
+
         if (!fullName || !email || !password) {
-            return res.status(400).json({ message: "Full Name, Email and Password are required" });
+            return res.status(400).json({ message: "All fields are required" });
+        }
+        const strongPasswordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
+        if (!strongPasswordRegex.test(password)) {
+            return res.status(400).json({ 
+                message: "Password too weak. Must be 8+ chars with at least 1 number and 1 special char." 
+            });
         }
 
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
+        const userExists = await User.findOne({ email });
+        if (userExists) {
             return res.status(400).json({ message: "User already exists" });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 12);
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        const isAdmin = email === "ashutosh.dwivedi604@gmail.com"; 
 
-        const newUser = new User({ 
-            fullName, 
-            email, 
-            password: hashedPassword 
+        const user = await User.create({
+            fullName,
+            email,
+            password: hashedPassword,
+            role: isAdmin ? "admin" : "user"
         });
-        
-        await newUser.save();
-
-        res.status(201).json({
-            message: "User created successfully",
-            user: {
-                id: newUser._id,
-                fullName: newUser.fullName,
-                email: newUser.email
-            }
-        });
+        if (user) {
+            res.status(201).json({
+                _id: user.id,
+                fullName: user.fullName,
+                email: user.email,
+                role: user.role,
+                token: generateToken(user._id)
+            });
+        } else {
+            res.status(400).json({ message: "Invalid user data" });
+        }
 
     } catch (error) {
-        console.error("Error during signup:", error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ message: error.message });
     }
-}
+};
 
 export { login, signup };

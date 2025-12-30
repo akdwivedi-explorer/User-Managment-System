@@ -1,31 +1,40 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { authAPI } from '../services/api';
-import { Input, Button } from '../components/common/UI';
-import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-hot-toast';
 
 export default function Signup() {
-  const [formData, setFormData] = useState({ 
-    fullName: '', 
-    email: '', 
-    password: '', 
-    confirm: '' 
+  const navigate = useNavigate();
+  const { signup } = useAuth();
+  
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    confirm: ''
   });
   
-  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
-    
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) newErrors.email = "Invalid email format";
 
-    if (formData.password.length < 6) newErrors.password = "Password must be at least 6 characters";
-    if (formData.password !== formData.confirm) newErrors.confirm = "Passwords do not match";
+    if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
+    if (!formData.email.trim()) newErrors.email = "Email is required";
     
+    const strongPasswordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
+
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (!strongPasswordRegex.test(formData.password)) {
+      newErrors.password = "Password must be 8+ chars, include a number & special char (!@#$%)";
+    }
+
+    if (formData.password !== formData.confirm) {
+      newErrors.confirm = "Passwords do not match";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -36,60 +45,95 @@ export default function Signup() {
 
     setLoading(true);
     try {
-      const { confirm, ...signupData } = formData;
-      await authAPI.signup(signupData);
-      
-      toast.success("Account created successfully! Please login.");
-      navigate('/login');
+      const res = await signup(formData);
+      if (res.error) {
+        toast.error(res.error);
+      } else {
+        toast.success("Account created successfully!");
+        navigate('/login');
+      }
     } catch (err) {
-      const msg = err.response?.data?.message || "Registration failed.";
-      toast.error(msg);
+      toast.error("Signup failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Create Account</h2>
-        <form onSubmit={handleSubmit}>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Create your account
+          </h2>
+        </div>
+        
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="rounded-md shadow-sm space-y-4">
 
-          <Input 
-            label="Full Name" 
-            value={formData.fullName} 
-            error={errors.fullName}
-            onChange={(e) => setFormData({...formData, fullName: e.target.value})} 
-          />
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Full Name</label>
+              <input
+                type="text"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                value={formData.fullName}
+                onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+              />
+              {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Email address</label>
+              <input
+                type="email"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
+              />
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Password</label>
+              <input
+                type="password"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                value={formData.password}
+                onChange={(e) => setFormData({...formData, password: e.target.value})}
+              />
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
+              <input
+                type="password"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                value={formData.confirm}
+                onChange={(e) => setFormData({...formData, confirm: e.target.value})}
+              />
+              {errors.confirm && <p className="text-red-500 text-xs mt-1">{errors.confirm}</p>}
+            </div>
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50"
+            >
+              {loading ? 'Creating Account...' : 'Sign up'}
+            </button>
+          </div>
           
-          <Input 
-            label="Email" 
-            type="email" 
-            value={formData.email} 
-            error={errors.email}
-            onChange={(e) => setFormData({...formData, email: e.target.value})} 
-          />
-          <Input 
-            label="Password" 
-            type="password" 
-            value={formData.password} 
-            error={errors.password}
-            onChange={(e) => setFormData({...formData, password: e.target.value})} 
-          />
-          <Input 
-            label="Confirm Password" 
-            type="password" 
-            value={formData.confirm} 
-            error={errors.confirm}
-            onChange={(e) => setFormData({...formData, confirm: e.target.value})} 
-          />
-          <Button type="submit" className="w-full mt-4" isLoading={loading}>
-            Sign Up
-          </Button>
+          <div className="text-center">
+            <Link to="/login" className="font-medium text-purple-600 hover:text-purple-500">
+              Already have an account? Sign in
+            </Link>
+          </div>
         </form>
-        <p className="mt-4 text-center text-sm">
-          Already have an account? <Link to="/login" className="text-blue-600">Log in</Link>
-        </p>
       </div>
     </div>
   );
