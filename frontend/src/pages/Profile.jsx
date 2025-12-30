@@ -8,7 +8,6 @@ export default function Profile() {
   const { user, login } = useAuth();
   console.log("Current User Data:", user);
   
-  // 1. Profile Info State
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -16,7 +15,6 @@ export default function Profile() {
     email: ''
   });
 
-  // 2. Password Change State (New)
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [passLoading, setPassLoading] = useState(false);
   const [passData, setPassData] = useState({
@@ -24,7 +22,6 @@ export default function Profile() {
     confirmPassword: ''
   });
 
-  // Load User Data
   useEffect(() => {
     if (user) {
       setFormData({
@@ -34,14 +31,12 @@ export default function Profile() {
     }
   }, [user]);
 
-  // --- HANDLER: Update Profile Info (Name/Email) ---
   const handleUpdate = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       const { data } = await authAPI.updateProfile(formData);
-      
-      // Preserve token, update user info in context
+
       const storedData = JSON.parse(localStorage.getItem('currentUser') || '{}');
       login({ user: { ...user, ...data }, token: storedData.token });
       
@@ -59,7 +54,6 @@ export default function Profile() {
     setIsEditing(false);
   };
 
-  // --- HANDLER: Change Password (New) ---
   const handlePasswordUpdate = async (e) => {
     e.preventDefault();
     
@@ -68,12 +62,11 @@ export default function Profile() {
 
     setPassLoading(true);
     try {
-      // API expects { password: "..." } to update it
       await authAPI.updateProfile({ password: passData.newPassword });
       
       toast.success("Password changed successfully");
       setIsChangingPassword(false);
-      setPassData({ newPassword: '', confirmPassword: '' }); // Clear fields
+      setPassData({ newPassword: '', confirmPassword: '' });
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to update password");
     } finally {
@@ -84,8 +77,7 @@ export default function Profile() {
   return (
     <div className="max-w-3xl mx-auto p-6">
       <div className="bg-white rounded-lg shadow-md p-8">
-        
-        {/* --- SECTION 1: Profile Details --- */}
+
         <div className="flex justify-between items-center mb-8 border-b pb-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">My Profile</h1>
@@ -129,7 +121,6 @@ export default function Profile() {
           )}
         </form>
 
-        {/* --- SECTION 2: Change Password --- */}
         <div className="mt-10 pt-8 border-t border-gray-100">
           <div className="flex items-center justify-between mb-6">
             <div>

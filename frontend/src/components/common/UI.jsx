@@ -1,6 +1,5 @@
 import { Loader2 } from 'lucide-react';
 
-// Input with validation display
 export const Input = ({ label, error, ...props }) => (
   <div className="mb-4">
     <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
@@ -12,7 +11,6 @@ export const Input = ({ label, error, ...props }) => (
   </div>
 );
 
-// Buttons
 export const Button = ({ children, variant = 'primary', isLoading, ...props }) => {
   const base = "px-4 py-2 rounded-md font-medium transition-colors flex items-center justify-center disabled:opacity-50";
   const variants = {
@@ -29,7 +27,6 @@ export const Button = ({ children, variant = 'primary', isLoading, ...props }) =
   );
 };
 
-// Modal
 export const Modal = ({ isOpen, title, children, onClose }) => {
   if (!isOpen) return null;
   return (

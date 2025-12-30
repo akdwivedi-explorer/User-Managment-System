@@ -10,7 +10,6 @@ export default function Navbar() {
     navigate('/login');
   };
 
-  // If not logged in, don't show the navbar
   if (!user) return null;
 
   return (
@@ -20,7 +19,6 @@ export default function Navbar() {
       </Link>
       
       <div className="flex items-center gap-4">
-        {/* FIX: Use fullName to match Backend response */}
         <span className="text-sm font-medium text-gray-700">
           {user.fullName} <span className="text-gray-400 font-normal">({user.role})</span>
         </span>

@@ -17,11 +17,9 @@ export default function Login() {
     
     setLoading(true);
     try {
-      // API Call
       const { data } = await authAPI.login(formData.email, formData.password);
       
-      // Context Update
-      login(data); // data should be { user: {...}, token: "..." }
+      login(data); 
       
       toast.success("Welcome back!");
       navigate(data.user.role === 'admin' ? '/admin' : '/profile');

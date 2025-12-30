@@ -5,7 +5,6 @@ import { Input, Button } from '../components/common/UI';
 import toast from 'react-hot-toast';
 
 export default function Signup() {
-  // 1. STATE: Use 'fullName' to match backend
   const [formData, setFormData] = useState({ 
     fullName: '', 
     email: '', 
@@ -19,7 +18,6 @@ export default function Signup() {
 
   const validate = () => {
     const newErrors = {};
-    // 2. VALIDATION: Check 'fullName'
     if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
     
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -39,7 +37,6 @@ export default function Signup() {
     setLoading(true);
     try {
       const { confirm, ...signupData } = formData;
-      // 3. API CALL: Sends { fullName: "...", email: "...", password: "..." }
       await authAPI.signup(signupData);
       
       toast.success("Account created successfully! Please login.");
@@ -57,8 +54,7 @@ export default function Signup() {
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Create Account</h2>
         <form onSubmit={handleSubmit}>
-          
-          {/* 4. INPUT: Binds to formData.fullName */}
+
           <Input 
             label="Full Name" 
             value={formData.fullName} 

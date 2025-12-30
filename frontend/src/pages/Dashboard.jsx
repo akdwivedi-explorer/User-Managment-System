@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { adminAPI } from "../services/api";
 import { Button } from "../components/common/UI";
-import DashboardTable from "../components/DashboardTable"; // <--- Import here
+import DashboardTable from "../components/DashboardTable"; 
 import toast from "react-hot-toast";
 
 export default function Dashboard() {
@@ -28,7 +28,6 @@ export default function Dashboard() {
   };
 
   const toggleStatus = async (user) => {
-    // 1. Get the correct ID (handle _id or id)
     const userId = user._id || user.id;
     if (!userId) return toast.error("User ID missing");
 
@@ -39,13 +38,10 @@ export default function Dashboard() {
       return;
 
     try {
-      // 2. Call API for THIS specific user
       await adminAPI.updateUserStatus(userId, newStatus);
 
-      // 3. Update UI: Only change the user with the matching ID
       setUsers((currentUsers) =>
         currentUsers.map((u) => {
-          // Strict check: if IDs match, update status. Otherwise, keep existing.
           if ((u._id || u.id) === userId) {
             return { ...u, status: newStatus };
           }
@@ -71,10 +67,8 @@ export default function Dashboard() {
         </Button>
       </div>
 
-      {/* Use the new Component */}
       <DashboardTable users={users} onStatusChange={toggleStatus} />
 
-      {/* Pagination Controls */}
       <div className="mt-4 flex items-center justify-between bg-white p-4 rounded-lg shadow">
         <Button
           variant="secondary"

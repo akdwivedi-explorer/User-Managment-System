@@ -15,7 +15,6 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData) => {
-    // Expect userData to contain { user: {...}, token: "..." }
     setUser(userData);
     localStorage.setItem('currentUser', JSON.stringify(userData));
   };
