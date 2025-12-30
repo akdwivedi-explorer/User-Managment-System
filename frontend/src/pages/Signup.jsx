@@ -23,6 +23,7 @@ export default function Signup() {
     if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
     if (!formData.email.trim()) newErrors.email = "Email is required";
     
+    // Note: This regex does NOT allow dots (.) or underscores (_)
     const strongPasswordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
 
     if (!formData.password) {
@@ -39,12 +40,14 @@ export default function Signup() {
     return Object.keys(newErrors).length === 0;
   };
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     setLoading(true);
     try {
+      // NOTE: Ensure your AuthContext 'signup' function throws an error on failure,
+      // otherwise this catch block won't run.
       await signup(formData); 
       
       toast.success("Account created successfully!");
@@ -69,6 +72,7 @@ const handleSubmit = async (e) => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
 
+            {/* Full Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700">Full Name</label>
               <input
@@ -80,6 +84,8 @@ const handleSubmit = async (e) => {
               />
               {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
             </div>
+
+            {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-700">Email address</label>
               <input
@@ -91,6 +97,8 @@ const handleSubmit = async (e) => {
               />
               {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
             </div>
+
+            {/* Password */}
             <div>
               <label className="block text-sm font-medium text-gray-700">Password</label>
               <input
@@ -103,6 +111,7 @@ const handleSubmit = async (e) => {
               {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
             </div>
 
+            {/* Confirm Password */}
             <div>
               <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
               <input
@@ -128,10 +137,10 @@ const handleSubmit = async (e) => {
           
           <div className="text-center">
             <p className="mt-2 text-sm text-gray-600">
-              Don't have an account?{' '}
-            <Link to="/login" className="font-medium text-purple-600 hover:text-purple-500">
-              Sign in
-            </Link>
+              Already have an account?{' '}
+              <Link to="/login" className="font-medium text-purple-600 hover:text-purple-500">
+                Sign in
+              </Link>
             </p>
           </div>
         </form>
