@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { authAPI } from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -19,13 +20,29 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('currentUser', JSON.stringify(userData));
   };
 
+  const signup = async (formData) => {
+    try {
+      const response = await authAPI.signup(formData);
+      return response;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('currentUser');
   };
 
   return (
-    <AuthContext.Provider value={{ user: user?.user, token: user?.token, login, logout, loading }}>
+    <AuthContext.Provider value={{ 
+      user: user?.user, 
+      token: user?.token, 
+      login, 
+      signup,
+      logout, 
+      loading 
+    }}>
       {!loading && children}
     </AuthContext.Provider>
   );
