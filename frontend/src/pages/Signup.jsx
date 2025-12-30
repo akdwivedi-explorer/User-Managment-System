@@ -39,21 +39,19 @@ export default function Signup() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     setLoading(true);
     try {
-      const res = await signup(formData);
-      if (res.error) {
-        toast.error(res.error);
-      } else {
-        toast.success("Account created successfully!");
-        navigate('/login');
-      }
+      await signup(formData); 
+      
+      toast.success("Account created successfully!");
+      navigate('/login'); 
     } catch (err) {
-      toast.error("Signup failed. Please try again.");
+      const errorMessage = err.response?.data?.message || "Signup failed. Please try again.";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
