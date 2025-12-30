@@ -2,6 +2,8 @@
 
 A full-stack user management application with role-based access control, featuring user authentication, profile management, and an admin dashboard for user administration.
 
+> **Note:** The assessment brief mentioned AI simulation in the video section, but the project title and core tasks defined a User Management System, which has been implemented accordingly.
+
 ## 🚀 Features
 
 ### Authentication & Authorization
@@ -67,7 +69,7 @@ Before you begin, ensure you have the following installed:
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd PurpleMeritAssignment
+   cd User-Managment-System
    ```
 
 2. **Install backend dependencies**
@@ -90,8 +92,8 @@ Create a `.env` file in the `backend` directory with the following variables:
 
 ```env
 PORT=5000
-MONGO_URI=mongodb://localhost:27017/user-management
-JWT_SECRET=your-secret-key-here-change-in-production
+MONGO_URI=mongodb://localhost:27017/user-management-system
+JWT_SECRET=your-secret-key
 ```
 
 **Important Notes:**
