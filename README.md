@@ -2,8 +2,6 @@
 
 A full-stack user management application with role-based access control, featuring user authentication, profile management, and an admin dashboard for user administration.
 
-> **Note:** The assessment brief mentioned AI simulation in the video section, but the project title and core tasks defined a User Management System, which has been implemented accordingly.
-
 ## 🚀 Features
 
 ### Authentication & Authorization
